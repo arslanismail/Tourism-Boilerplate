@@ -22,7 +22,7 @@ describe('DB connection Test', () => {
 		const responseArray = await db.raw('select 1+1 as result');
 
 		const [dbResponse] = responseArray.rows;
-
+		console.log('asdsadsadsad');
 		await expect(dbResponse.result).toEqual(2);
 	});
 });

@@ -35,10 +35,6 @@
     "email": "Arslanismail840@gmail.com"
   },
   "contributors": [],
-  "bugs": {
-    "url": "https://github.com/aiondigital/mw.bp.node.api/issues"
-  },
-  "homepage": "https://github.com/aiondigital/mw.bp.node.api#readme",
   "devDependencies": {
     "@types/crypto-js": "^3.1.44",
     "@types/express": "^4.17.3",
@@ -70,6 +66,7 @@
     "jsonwebtoken": "^8.5.1",
     "knex": "^0.20.13",
     "mssql": "^6.2.0",
+    "pg": "^8.0.0",
     "supertest": "^4.0.2",
     "swagger-jsdoc": "^4.0.0",
     "winston": "^3.2.1"

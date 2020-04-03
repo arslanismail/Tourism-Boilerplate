@@ -43,16 +43,7 @@ class ApiDoc {
 			components: {},
 		};
 	}
-	static publish(app: any) {
-		const fileContent = this.fileContent();
-		fs.writeFileSync(
-			path.join(__dirname, '../../public/api.docs.json'),
-			fileContent
-		);
-		app.get('/docs', function (req: Request, res: Response) {
-			res.sendFile(path.join(__dirname, '../../public/index.html'));
-		});
-	}
+
 	static fileContent() {
 		const docsDefination = this.getDefination();
 		const content = swaggerJSDoc({

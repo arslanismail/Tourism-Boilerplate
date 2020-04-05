@@ -4,6 +4,7 @@ import { ENCRYPTION_SECRET } from './util/secrets';
 
 // Middlewares
 import middlewares from './config/middlewares';
+import db from './config/db/index';
 
 // API Routes
 import ApiRoutes from './api';
@@ -23,7 +24,7 @@ app.set('env', ENV);
 
 // Middlewares configuration
 middlewares.config(app);
-
+db();
 app.use('/api', ApiRoutes);
 
 export default app;

@@ -1,7 +1,7 @@
 import IAuthorizationService from './interfaces/IAuthorizationService';
 import { Request, Response } from 'express';
 import JWT from '../../../util/jwt';
-
+import User from '../models/user.model';
 class AuthorizationService implements IAuthorizationService {
 	constructor() {}
 
@@ -17,7 +17,12 @@ class AuthorizationService implements IAuthorizationService {
 			id: 2,
 		};
 		await data;
+		console.log('Calling User Model to save data');
 
+		const user = new User();
+		user.getAllUsers();
+
+		console.log('After Calling The Model');
 		if (true) {
 			const token = await JWT.encode({ id: resultData.id, type: 'customer' });
 			resultData.token = token;

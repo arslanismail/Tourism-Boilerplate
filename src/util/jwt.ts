@@ -1,5 +1,7 @@
 import * as jsonwebtoken from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 const Jwt = {
 	encode: (payload: any): any => {
 		const SECRET: any = process.env.APP_SECRET;

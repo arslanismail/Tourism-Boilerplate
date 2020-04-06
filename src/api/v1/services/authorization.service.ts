@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import JWT from '../../../util/jwt';
 import User from '../models/user.model';
 class AuthorizationService implements IAuthorizationService {
+	User: any = new User();
 	constructor() {}
 
 	async register(data: any): Promise<any> {
@@ -19,8 +20,7 @@ class AuthorizationService implements IAuthorizationService {
 		await data;
 		console.log('Calling User Model to save data');
 
-		const user = new User();
-		user.getAllUsers();
+		this.User.getAllUsers();
 
 		console.log('After Calling The Model');
 		if (true) {

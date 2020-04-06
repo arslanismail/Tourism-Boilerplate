@@ -20,9 +20,9 @@ class AuthorizationService implements IAuthorizationService {
 		await data;
 		console.log('Calling User Model to save data');
 
-		this.User.getAllUsers();
+		const users = await this.User.getAllUsers();
+		console.log(users);
 
-		console.log('After Calling The Model');
 		if (true) {
 			const token = await JWT.encode({ id: resultData.id, type: 'customer' });
 			resultData.token = token;

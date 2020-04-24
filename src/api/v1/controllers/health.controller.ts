@@ -1,7 +1,5 @@
 import IHealthController from './interfaces/IHealthController';
-
 import { Request, Response, NextFunction } from 'express';
-
 import HealthService from '../services/health.service';
 import IHealthService from '../services/interfaces/IHealthService';
 

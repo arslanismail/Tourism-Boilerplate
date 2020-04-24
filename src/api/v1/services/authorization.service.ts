@@ -9,6 +9,7 @@ class AuthorizationService implements IAuthorizationService {
 	async register(data: any): Promise<any> {
 		const userTable = [];
 		userTable.push(data);
+		console.log(userTable);
 		const resultData = {
 			token: 'aaaa',
 			email: 'arslanismail840@gmail..com',

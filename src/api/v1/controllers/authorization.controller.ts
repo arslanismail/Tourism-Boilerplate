@@ -1,5 +1,4 @@
 import IAuthorizationController from './interfaces/IAuthorizationController';
-
 import { Request, Response, NextFunction } from 'express';
 import AuthorizationService from '../services/authorization.service';
 import IAuthorizationService from '../services/interfaces/IAuthorizationService';

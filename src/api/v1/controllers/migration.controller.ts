@@ -1,7 +1,5 @@
 import IMigrationController from './interfaces/IMigrationController';
-
 import { Request, Response, NextFunction } from 'express';
-
 import MigrationService from '../services/migration.service';
 import IMigrationService from '../services/interfaces/IMigrationService';
 
@@ -18,19 +16,12 @@ class MigrationController implements IMigrationController {
 		_next: NextFunction
 	): Promise<any> {
 		const result = await migrationService.migrate();
-		console.log(result);
-		if (result) {
-			res.setHeader('Table created', result.data);
-		}
 		return res.json(result).end();
 	}
 
 	async seeds(req: Request, res: Response, _next: NextFunction): Promise<any> {
 		const result = await migrationService.seeds();
-		console.log(result);
-		if (result) {
-			res.setHeader('Table created', result.data);
-		}
+
 		return res.json(result).end();
 	}
 }

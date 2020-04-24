@@ -18,35 +18,40 @@ class MigrationService implements IMigrationService {
 		);
 		await db
 			.raw(
-				'CREATE TABLE IF NOT EXISTS users(id serial primary key,fullName character varying(500),phoneNumber character varying(500),gender character varying(500),roleId integer references roles(id) ,photoId integer references photos(id),addressId integer references address(id),is_active integer Null,email character varying(100) Null,joinDate date NOT NULL DEFAULT current_date);'
+				'CREATE TABLE IF NOT EXISTS users(id serial primary key,password character varying(500),fullName character varying(500),phoneNumber character varying(500),gender character varying(500),roleId integer references roles(id) ,photoId integer references photos(id),addressId integer references address(id),is_active integer Null,email character varying(100) Null,joinDate date NOT NULL DEFAULT current_date);'
 			)
 			.then(() => {
 				const result = { status: 200, data: 'Tables created successfully' };
-				console.log(result);
 				return result;
 			});
 	}
 	async seeds(): Promise<any> {
-		this.role();
-		this.address();
-		this.photos();
-		this.user();
+		const role = await this.role();
+		const address = await this.address();
+		const photo = await this.photos();
+		const user = await this.user();
+		const response = [];
+		response.push(role);
+		response.push(address);
+		response.push(photo);
+		response.push(user);
+		return response;
 	}
 	async role(): Promise<any> {
 		const data = [{ type: 'tourist' }, { type: 'hotel' }, { type: 'driver' }];
 		const roles = await db('roles').select();
 		if (!roles.length) {
 			const result = await db('roles').insert(data);
-			console.log('roles seeder has run');
+			return { status: 200, data: 'Role seeder' };
 		} else {
-			console.log('roles table already have data');
+			return { status: 400, data: 'Role Table already have data' };
 		}
 	}
 
 	async photos(): Promise<any> {
 		const fileName = faker.image.avatar();
 		const result = await db('photos').insert({ file: fileName });
-		console.log('photos seeder has run');
+		return { status: 200, data: 'Photo seeder' };
 	}
 	async address(): Promise<any> {
 		const street = faker.address.streetAddress();
@@ -57,7 +62,7 @@ class MigrationService implements IMigrationService {
 			city: city,
 			country: country,
 		});
-		console.log('Address seeder has run');
+		return { status: 200, data: 'address seeder' };
 	}
 	async user(): Promise<any> {
 		const email = faker.internet.email();
@@ -81,19 +86,19 @@ class MigrationService implements IMigrationService {
 		});
 
 		const user = await db('users').select();
-
 		const result = await db('users').insert({
 			fullname: name,
 			phonenumber: phone,
 			gender: 'Male',
 			email: email,
+			password: 'anypassword'
 			is_active: 1,
 			roleid: faker.random.arrayElement(roleIds),
 			photoid: faker.random.arrayElement(photoIds),
 			addressid: faker.random.arrayElement(addressIds),
 			joindate: date,
 		});
-		console.log('user seeder');
+		return { status: 200, data: 'user seeder' };
 	}
 }
 

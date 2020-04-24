@@ -7,6 +7,6 @@ export default class UserModel extends BaseModel {
 
 	async getAllUsers() {
 		const users = await this.DB('users');
-		console.log(users);
+		//console.log(users);
 	}
 }

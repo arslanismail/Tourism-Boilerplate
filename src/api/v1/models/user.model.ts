@@ -8,32 +8,23 @@ class UserModel extends BaseModel {
 	async create(userBody: any): Promise<any> {
 		const user: any = userBody;
 		// save user id details and get the id to proceed with the user creation method
-		const getSavedIdDetails: number = await this.saveIdDetails(user);
-		const countryId: number = parseInt(user.countryId);
 		const password: string = user.password;
 		const hashedPassword: any = await Bcrypt.hashPassword(password);
 		const isEmailExists: any = await this.checkEmail(user.email);
 		if (!isEmailExists) {
 			try {
-				const createUserId = await this.DB('CDT_Users')
+				const [createUserId] = await this.DB('users')
 					.insert({
-						FullName: user.firstName + user.lastName,
-						Email: user.email,
-						CountryID: countryId,
-						isNew: true,
-						OTPStatus: false,
-						EmailOTPStatus: false,
-						DetailsId: getSavedIdDetails,
+						fullname: user.fullname,
+						email: user.email,
+						password: hashedPassword,
+						gender: user.gender,
+						is_active: 1,
 					})
-					.returning('UserId');
+					.returning('id');
 
-				//  Store Password
-				await this.DB('CDT_UserPasswords').insert({
-					UserId: parseInt(createUserId),
-					PasswordHash: hashedPassword,
-					CreateTime: new Date(),
-				});
-				const result = await this.getUserById(parseInt(createUserId));
+				const result = { data: null, status: false };
+				result.data = await this.userFindById(createUserId);
 				result.status = true;
 				return result;
 			} catch (err) {
@@ -42,6 +33,11 @@ class UserModel extends BaseModel {
 		} else {
 			return { status: false, data: 'Email Already Exists' };
 		}
+	}
+
+	async userFindById(id: number): Promise<any> {
+		const user = await this.DB('users').where('id', id).first();
+		return user;
 	}
 
 	async saveIdDetails(user: any): Promise<any> {
@@ -77,9 +73,7 @@ class UserModel extends BaseModel {
 
 	async checkEmail(email: string): Promise<any> {
 		try {
-			const checkEmail = await this.DB('CDT_Users')
-				.where('Email', email)
-				.first();
+			const checkEmail = await this.DB('users').where('email', email).first();
 			return checkEmail;
 		} catch (err) {
 			console.log('Exception Console Error', err.message);

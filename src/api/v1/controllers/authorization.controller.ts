@@ -15,7 +15,7 @@ class AuthorizationController implements IAuthorizationController {
 		_next: NextFunction
 	): Promise<any> {
 		const result = await authorizationService.register(req.body);
-		if (result.data.token) {
+		if (result.status == 200) {
 			res.setHeader('x-access-token', result.data.token);
 		}
 		return res.json(result).end();

@@ -24,6 +24,14 @@ class BodyValidator {
 				confirmpassword: registerSchema.confirmpassword,
 				fullname: registerSchema.fullname,
 				gender: registerSchema.gender,
+				phonenumber: registerSchema.phonenumber,
+				street: registerSchema.street,
+				city: registerSchema.city,
+				country: registerSchema.country,
+				file: registerSchema.file,
+				type: registerSchema.type,
+
+
 			})
 			.unknown(true);
 		return Validator.body(validation);
@@ -35,8 +43,8 @@ class BodyValidator {
 			.keys({
 				email: loginSchema.email,
 				password: loginSchema.password,
-				remmeberMe: loginSchema.remmeberMe,
-				platform: loginSchema.platform,
+				// remmeberMe: loginSchema.remmeberMe,
+				// platform: loginSchema.platform,
 			})
 			.unknown(true);
 		return Validator.body(validation);

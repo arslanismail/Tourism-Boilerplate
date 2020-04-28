@@ -5,7 +5,7 @@ import * as faker from 'faker';
 import { promises } from 'dns';
 
 class MigrationService implements IMigrationService {
-	constructor() {}
+	constructor() { }
 	async migrate(): Promise<any> {
 		await db.raw(
 			'CREATE TABLE IF NOT EXISTS roles(id serial primary key,type character varying(100));'
@@ -14,12 +14,27 @@ class MigrationService implements IMigrationService {
 			'CREATE TABLE IF NOT EXISTS photos(id serial primary key,file character varying(500));'
 		);
 		await db.raw(
-			'CREATE TABLE IF NOT EXISTS address(id serial primary key,city character varying(500),street character varying(500),country character varying(500));'
+			'CREATE TABLE IF NOT EXISTS dddd(id serial primary key,city character varying(500),street character varying(500),country character varying(500));'
 		);
 		await db
 			.raw(
 				'CREATE TABLE IF NOT EXISTS users(id serial primary key,password character varying(500),fullName character varying(500),phoneNumber character varying(500),gender character varying(500),roleId integer references roles(id) ,photoId integer references photos(id),addressId integer references address(id),is_active integer Null,email character varying(100) Null,joinDate date NOT NULL DEFAULT current_date);'
-			)
+			);
+		await db.raw(
+			'CREATE INDEX IF NOT EXISTS idx_user_address ON users(addressid);'
+		);
+		await db.raw(
+			'CREATE INDEX IF NOT EXISTS idx_user_photo ON users(photoid);'
+		);
+		await db.raw(
+			'CREATE INDEX IF NOT EXISTS idx_user_role ON users(roleid);'
+		);
+		await db.raw(
+			'CREATE INDEX IF NOT EXISTS idx_user_email ON users(email);'
+		);
+		await db.raw(
+			'CREATE INDEX IF NOT EXISTS idx_user_phone ON users(phonenumber);'
+		)
 			.then(() => {
 				const result = { status: 200, data: 'Tables created successfully' };
 				return result;

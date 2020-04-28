@@ -11,13 +11,19 @@ export const registerSchema = {
 	confirmpassword: Joi.string().required(),
 	fullname: Joi.string().min(3).max(40).required(),
 	gender: Joi.string().required(),
+	phonenumber: Joi.string().required(),
+	type: Joi.string().required(),
+	city: Joi.string().required(),
+	street: Joi.string().required(),
+	country: Joi.string().required(),
+	file: Joi.string().required(),
 };
 
 export const loginSchema = {
 	email: checkEmailSchema.email,
 	password: registerSchema.password,
-	remmeberMe: Joi.boolean().required(),
-	platform: Joi.any().valid('A', 'I'),
+	// remmeberMe: Joi.boolean().required(),
+	// platform: Joi.any().valid('A', 'I'),
 };
 
 export default checkEmailSchema;

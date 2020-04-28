@@ -1,5 +1,7 @@
 import BaseModel from './base.model';
 import Bcrypt from './../../../util/bcrypt';
+import ResponseError from './../../../util/ResponseError';
+import { Response } from 'express';
 
 class UserModel extends BaseModel {
 	constructor() {
@@ -10,34 +12,64 @@ class UserModel extends BaseModel {
 		// save user id details and get the id to proceed with the user creation method
 		const password: string = user.password;
 		const hashedPassword: any = await Bcrypt.hashPassword(password);
+		const comparePasswords: any = await Bcrypt.compare(user.confirmpassword, hashedPassword);
 		const isEmailExists: any = await this.checkEmail(user.email);
-		if (!isEmailExists) {
-			try {
-				const [createUserId] = await this.DB('users')
-					.insert({
-						fullname: user.fullname,
-						email: user.email,
-						password: hashedPassword,
-						gender: user.gender,
-						is_active: 1,
-					})
-					.returning('id');
+		const getRoleId: any = await this.getRoleId(user.type);
+		if (comparePasswords) {
+			if (!isEmailExists) {
+				try {
+					const [photoId] = await this.DB('photos').insert({ file: user.file }).returning('id');
+					const [addressId] = await this.DB('address')
+						.insert({
+							city: user.city,
+							street: user.street,
+							country: user.country,
+						}).returning('id');
+					const [createUserId] = await this.DB('users')
+						.insert({
+							fullname: user.fullname,
+							email: user.email,
+							password: hashedPassword,
+							gender: user.gender,
+							is_active: 1,
+							phonenumber: user.phonenumber,
+							roleid: getRoleId.id,
+							photoid: photoId,
+							addressid: addressId,
+						})
+						.returning('id');
 
-				const result = { data: null, status: false };
-				result.data = await this.userFindById(createUserId);
-				result.status = true;
-				return result;
-			} catch (err) {
-				console.log('Exception Console Error', err.message);
+					const result = { data: null, status: false };
+					result.data = await this.userFindById(createUserId);
+					result.status = true;
+					return result;
+				} catch (err) {
+					throw new ResponseError(err.message, 'CREATE_USER_API', 400);
+				}
+			} else {
+				throw new ResponseError('Email Already Exists', 'UNIQUE_EMAIL', 400);
 			}
 		} else {
-			return { status: false, data: 'Email Already Exists' };
+			throw new ResponseError('Both Password does not match', 'PASSWORD_UNMATCH', 400);
+		}
+	}
+
+	async getRoleId(role: any): Promise<any> {
+		try {
+			const getRole = await this.DB('roles').where('type', role).first();
+			return getRole;
+		} catch (error) {
+			throw new ResponseError('Role Does not Exist', 'GET_ROLE_API', 400);
 		}
 	}
 
 	async userFindById(id: number): Promise<any> {
-		const user = await this.DB('users').where('id', id).first();
-		return user;
+		try {
+			const user = await this.DB('users').where('id', id).first();
+			return user;
+		} catch (err) {
+			throw new ResponseError(err.message, 'GET_USER_BY_ID', 400);
+		}
 	}
 
 	async saveIdDetails(user: any): Promise<any> {
@@ -76,22 +108,22 @@ class UserModel extends BaseModel {
 			const checkEmail = await this.DB('users').where('email', email).first();
 			return checkEmail;
 		} catch (err) {
-			console.log('Exception Console Error', err.message);
+			throw new ResponseError('Email Does Not Exist', 'CHECK_EMAIL_API', 400);
 		}
 	}
 
 	async checkUserPassword(userId: any, _password: string): Promise<any> {
 		try {
-			const getHashedPassword = await this.DB('CDT_UserPasswords')
-				.where('Userid', userId)
+			const getHashedPassword = await this.DB('users')
+				.where('email', userId)
 				.first();
 			const reuslt = await Bcrypt.compare(
 				_password,
-				getHashedPassword.PasswordHash
+				getHashedPassword.password
 			);
 			return reuslt;
 		} catch (err) {
-			console.log('Exception Console Error', err.message);
+			throw new ResponseError(err.message, 'CHECK_USER_PASSWORD_COMPARE', 400);
 		}
 	}
 
@@ -99,20 +131,22 @@ class UserModel extends BaseModel {
 		try {
 			const getUserByEmail = await this.checkEmail(_email);
 			if (!getUserByEmail) {
-				return { status: false, data: 'Email Does Not Exists' };
+				throw new ResponseError('Email Does not Exists', 'LOGIN_API', 400);
 			}
 			const passwordChecking = await this.checkUserPassword(
-				getUserByEmail.UserId,
+				getUserByEmail.email,
 				_password
 			);
 			if (passwordChecking) {
+				const getUserByEmails = { data: null, status: false };
 				getUserByEmail.status = true;
-				return getUserByEmail;
+				getUserByEmails.data = getUserByEmail;
+				return getUserByEmails;
 			} else {
-				return { status: false, data: 'Password Did Not Matched' };
+				throw new ResponseError('Password Did Not Match', 'LOGIN_API', 400);
 			}
 		} catch (err) {
-			console.log('Exception Console Error', err.message);
+			throw new ResponseError(err.message, 'LOGIN_API', 400);
 		}
 	}
 }

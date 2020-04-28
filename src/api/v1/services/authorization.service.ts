@@ -2,41 +2,32 @@ import IAuthorizationService from './interfaces/IAuthorizationService';
 import { Request, Response } from 'express';
 import JWT from '../../../util/jwt';
 import User from '../models/user.model';
-class AuthorizationService implements IAuthorizationService {
-	constructor() {}
+import BaseService from './BaseService';
+class AuthorizationService extends BaseService
+	implements IAuthorizationService {
+	constructor() {
+		super();
+	}
 
 	async register(data: any): Promise<any> {
-		const result = await User.create(data);
-		if (result.status) {
+		try {
+			const result = await User.create(data);
+
 			const token = await JWT.encode({ id: result.id });
 			result.data.token = token;
-			return { status: 200, data: result.data, message: 'Success' };
-		} else {
-			return {
-				status: 400,
-				data: null,
-				message: result.data ? result.data : 'Bad Request',
-			};
+			return this.sendResponse(result);
+		} catch (error) {
+			return this.commonErrorResponse(error);
 		}
 	}
 
 	async login(data: any): Promise<any> {
-		const password = 'arslan';
-		const queryData = {
-			token: 'aaaaa',
-			email: 'arslanismail840@gmail..com',
-			isMobileVerified: false,
-			isEmailVerified: false,
-			userId: '8f70f86c-9f80-4b02-8196-2e5cd530fa42',
-			id: 2,
-		};
-		await data;
-		if (data.password === password && data.email === queryData.email) {
-			// const token = await JWT.encode({ id: data.id, type: 'customer' });
-			// queryData.token = token;
-			return { status: 200, data: queryData, message: 'Success' };
-		} else {
-			return { status: 404, data: {}, message: 'Not Found' };
+
+		try {
+			const result = await User.login(data.email, data.password);
+			return this.sendResponse(result);
+		} catch (error) {
+			return this.commonErrorResponse(error);
 		}
 	}
 }

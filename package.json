@@ -64,7 +64,7 @@
     "express": "^4.17.1",
     "joi-phone-number": "^4.1.0",
     "jsonwebtoken": "^8.5.1",
-    "knex": "^0.20.13",
+    "knex": "^2.4.0",
     "mssql": "^6.2.0",
     "pg": "^8.0.0",
     "supertest": "^4.0.2",
